@@ -8,17 +8,22 @@
     <title>Weather</title>
   </head>
   <body>
+    <video autoplay muted loop poster="poster.jpg">
+      <source src="{% static 'weather/rain.mp4' %}" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
     <h1>Weather in {{ city }}, {{ country }}</h1>
     <form method="get" action="{% url 'index' %}">
-      <label for="city">City:</label>
-      <input type="text" id="city" name="city" value="{{ city }}" />
       <label for="country">Country:</label>
       <input type="text" id="country" name="country" value="{{ country }}" />
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" value="{{ city }}" />
       <button type="submit">Submit</button>
     </form>
     <p>Temperature {{ temperature }}°C</p>
     <p>Humidity: {{ humidity }}%</p>
     <p>Wind Speed: {{ wind_speed }} km/h</p>
-    <p>Weather: {{ description }}</p>
+    <p>Weather: {{ weather_condition }}</p>
+    <p>description: {{ description }}</p>
   </body>
 </html>

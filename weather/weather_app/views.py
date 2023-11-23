@@ -37,13 +37,14 @@ def index(request):
 
         # Convert wind speed from m/s to km/h
         wind_speed_kilometers_per_hour = round(wind_speed_meters_per_second * 3.6)
-
+        weather_condition = weather_data.get('weather', [{}])[0].get('main', 'N/A')
         description = weather_data.get('weather', [{}])[0].get('description', 'N/A')
     else:
         # Handle the case where weather data is not available
         temperature_celsius = 'N/A'
         humidity = 'N/A'
         wind_speed_kilometers_per_hour = 'N/A'
+        weather_condition = 'N/A'
         description = 'N/A'
 
     context = {
@@ -52,6 +53,7 @@ def index(request):
         'temperature': temperature_celsius,
         'humidity': humidity,
         'wind_speed': wind_speed_kilometers_per_hour,  # Display wind speed in km/h
+        'weather_condition': weather_condition,
         'description': description,
     }
     return render(request, 'index.html', context)
