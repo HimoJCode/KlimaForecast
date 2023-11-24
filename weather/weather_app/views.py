@@ -1,59 +1,44 @@
 import requests
 from django.shortcuts import render
-#from datetime import datetime
+from datetime import datetime
 
 # Create your views here.
-
-def get_weather(api_key, city, country):
-    url = f'https://api.openweathermap.org/data/2.5/weather?q={city},{country}&appid={api_key}'
-    response = requests.get(url)
-    
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        # Handle the case where the API request was not successful
-        return None
-    
-def kelvin_to_celsius(kelvin):
-    return kelvin - 273.15
-
 def index(request):
-    api_key = '3ac8030d435340805fb457e2b81d7467'
-    city = request.GET.get('city', 'Butuan City')  
-    country = request.GET.get('country', 'Philippines') 
-    weather_data = get_weather(api_key, city, country)
-    
-    if weather_data:
-        # Check if the response includes temperature data
-        if 'main' in weather_data and 'temp' in weather_data['main']:
-            temperature_kelvin = weather_data['main']['temp']
-            temperature_celsius = round(kelvin_to_celsius(temperature_kelvin))
+    # if there are no errors the code inside try will execute
+    try:
+    # checking if the method is POST
+        if request.method == 'POST':
+            API_KEY = '3ac8030d435340805fb457e2b81d7467'
+            # getting the city name from the form input   
+            city_name = request.POST.get('city')
+            # the url for current weather, takes city_name and API_KEY   
+            url = f'https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}&units=metric'
+            # converting the request response to json   
+            response = requests.get(url).json()
+            # getting the current time
+            current_time = datetime.now()
+            # formatting the time using directives, it will take this format Day, Month Date Year, Current Time 
+            formatted_time = current_time.strftime("%A, %B %d %Y, %H:%M:%S %p")
+            # bundling the weather information in one dictionary
+            city_weather_update = {
+                'city': city_name,
+                'description': response['weather'][0]['description'],
+                'icon': response['weather'][0]['icon'],
+                'temperature':str(response['main']['temp']) + ' °C',
+                'country_code': response['sys']['country'],
+                'wind': (response['wind']['speed']),
+                'humidity':str(response['main']['humidity']),
+                'time': formatted_time
+            }
+        # if the request method is GET empty the dictionary
         else:
-            temperature_celsius = 'N/A'
+            city_weather_update = {}
+        
+        context = {'city_weather_update': city_weather_update, 'error_message': None}
+        return render(request, 'index.html', context)
+    except Exception as e:
+        # Handle generic exception
+        error_message = f"The city you've enter is not found!"
+        context = { 'error_message': error_message}
+        return render(request, 'index.html', context)
 
-        humidity = weather_data.get('main', {}).get('humidity', 'N/A')
-        wind_speed_meters_per_second = weather_data.get('wind', {}).get('speed', 'N/A')
-
-        # Convert wind speed from m/s to km/h
-        wind_speed_kilometers_per_hour = round(wind_speed_meters_per_second * 3.6)
-        weather_condition = weather_data.get('weather', [{}])[0].get('main', 'N/A')
-        description = weather_data.get('weather', [{}])[0].get('description', 'N/A')
-    else:
-        # Handle the case where weather data is not available
-        temperature_celsius = 'N/A'
-        humidity = 'N/A'
-        wind_speed_kilometers_per_hour = 'N/A'
-        weather_condition = 'N/A'
-        description = 'N/A'
-
-    context = {
-        'city': city,
-        'country': country,
-        'temperature': temperature_celsius,
-        'humidity': humidity,
-        'wind_speed': wind_speed_kilometers_per_hour,  # Display wind speed in km/h
-        'weather_condition': weather_condition,
-        'description': description,
-    }
-    return render(request, 'index.html', context)

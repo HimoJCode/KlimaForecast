@@ -2,28 +2,182 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'weather.css' %}" type="text/css" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Weather</title>
+    <meta content="" name="description" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="{% static 'weather/assets/img/favicon.png' %}" rel="icon" />
+    <link
+      href="{% static 'weather/assets/img/apple-touch-icon.png' %}"
+      rel="apple-touch-icon"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="{% static 'weather/assets/vendor/bootstrap/css/bootstrap.min.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'weather/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}"
+      rel="stylesheet"
+    />
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'weather/assets/css/style.css' %}" rel="stylesheet" />
   </head>
+
   <body>
-    <video autoplay muted loop poster="poster.jpg">
-      <source src="{% static 'weather/rain.mp4' %}" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-    <h1>Weather in {{ city }}, {{ country }}</h1>
-    <form method="get" action="{% url 'index' %}">
-      <label for="country">Country:</label>
-      <input type="text" id="country" name="country" value="{{ country }}" />
-      <label for="city">City:</label>
-      <input type="text" id="city" name="city" value="{{ city }}" />
-      <button type="submit">Submit</button>
-    </form>
-    <p>Temperature {{ temperature }}°C</p>
-    <p>Humidity: {{ humidity }}%</p>
-    <p>Wind Speed: {{ wind_speed }} km/h</p>
-    <p>Weather: {{ weather_condition }}</p>
-    <p>description: {{ description }}</p>
+    <div>
+      <!-- Video sources go here -->
+      <video id="backgroundVideo" autoplay muted loop>
+        <!-- Default video source -->
+
+        <!-- Additional sources for different weather conditions -->
+        <source
+          id="clearsky"
+          src="{% static 'weather/clearsky.mp4' %}"
+          type="video/mp4"
+        />
+        <source
+          id="fewclouds"
+          src="{% static 'weather/fewclouds.mp4' %}"
+          type="video/mp4"
+        />
+        <source
+          id="scatteredclouds"
+          src="{% static 'weather/scatteredsclouds.mp4' %}"
+          type="video/mp4"
+        />
+        <source
+          id="rainyVideo"
+          src="{% static 'weather/rain.mp4' %}"
+          type="video/mp4"
+        />
+        <source
+          id="snowyVideo"
+          src="{% static 'weather/snow.mp4' %}"
+          type="video/mp4"
+        />
+        <!-- Add more sources as needed -->
+      </video>
+    </div>
+    <!-- ======= Header ======= -->
+    <header id="header" class="d-flex align-items-center">
+      <div class="container d-flex flex-column align-items-center">
+        <h2>ITs Weather Time</h2>
+        {% if city_weather_update %}
+        <h1 style="text-transform: capitalize">
+          {{ city_weather_update.city }}, {{ city_weather_update.country_code }}
+        </h1>
+        <div class="data d-flex justify-content-center">
+          <div>
+            <p class="text-center">{{ city_weather_update.temperature}}</p>
+            <p>Temperature</p>
+          </div>
+          <div>
+            <p>{{ city_weather_update.humidity }}%</p>
+            <p>Humidity</p>
+          </div>
+
+          <div>
+            <p>{{ city_weather_update.wind}}</p>
+            <p>km/h</p>
+            <p>Wind</p>
+          </div>
+          <div>
+            <h3>{{ city_weather_update.description}}</h3>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="subscribe">
+          <div>
+            <h4>{% if error_message %} {{ error_message }} {% endif %}</h4>
+          </div>
+          <form method="post" action="{% url 'index' %}">
+            {% csrf_token %}
+            <div class="container">
+              <br />
+              <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                  <form class="card card-sm">
+                    <div class="card-body row no-gutters align-items-center">
+                      <div class="col-auto">
+                        <i class="fas fa-search h4 text-body"></i>
+                      </div>
+                      <!--end of col-->
+                      <div class="col">
+                        <input
+                          class="form-control form-control-lg form-control-borderless"
+                          type="text"
+                          id="city"
+                          name="city"
+                          value="{{ city }}"
+                          placeholder="Search topics or keywords"
+                        />
+                      </div>
+                      <!--end of col-->
+                      <div class="col-auto">
+                        <button class="btn btn-lg btn-success" type="submit">
+                          Search
+                        </button>
+                      </div>
+                      <!--end of col-->
+                    </div>
+                  </form>
+                </div>
+                <!--end of col-->
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </header>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var weatherCondition = "{{ city_weather_update.description|lower }}";
+
+        // Map weather conditions to video sources
+        var videoSources = {
+          "few clouds": "{% static 'weather/fewclouds.mp4' %}",
+          "scattered clouds": "{% static 'weather/scatteredsclouds.mp4' %}",
+          rainy: "{% static 'weather/rain.mp4' %}",
+          snowy: "{% static 'weather/snow.mp4' %}",
+          "clear sky": "{% static 'weather/clearsky.mp4' %}", // Add this line
+        };
+
+        // Set the video source based on the weather condition
+        var backgroundVideo = document.getElementById("backgroundVideo");
+
+        // Convert the weather condition to lowercase and remove leading/trailing whitespaces
+        var cleanedWeatherCondition = weatherCondition.toLowerCase().trim();
+
+        // Check if the cleaned weather condition exists in videoSources
+        if (videoSources.hasOwnProperty(cleanedWeatherCondition)) {
+          backgroundVideo.src = videoSources[cleanedWeatherCondition];
+        } else {
+          // Log an error to the console if the weather condition is not found
+          console.error(
+            "Weather condition not found:",
+            cleanedWeatherCondition
+          );
+        }
+      });
+    </script>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'weather/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'weather/assets/vendor/php-email-form/validate.js' %}"></script>
+
+    <!-- Template Main JS File -->
+    <script src="{% static 'weather/assets/js/main.js' %}"></script>
   </body>
 </html>
