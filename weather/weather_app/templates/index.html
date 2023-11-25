@@ -19,6 +19,11 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i"
       rel="stylesheet"
     />
+    <!-- Font Awesome CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
 
     <!-- Vendor CSS Files -->
     <link
@@ -57,7 +62,7 @@
           type="video/mp4"
         />
         <source
-          id="rainyVideo"
+          id="moderaterain"
           src="{% static 'weather/rain.mp4' %}"
           type="video/mp4"
         />
@@ -70,73 +75,51 @@
       </video>
     </div>
     <!-- ======= Header ======= -->
-    <header id="header" class="d-flex align-items-center">
-      <div class="container d-flex flex-column align-items-center">
-        <h2>ITs Weather Time</h2>
+    <header id="header">
+      <div class="container">
+        <h2>IT's Weather Time</h2>
         {% if city_weather_update %}
         <h1 style="text-transform: capitalize">
+          <img
+            src="http://openweathermap.org/img/w/{{ city_weather_update.icon }}.png"
+            alt=""
+          />
           {{ city_weather_update.city }}, {{ city_weather_update.country_code }}
         </h1>
-        <div class="data d-flex justify-content-center">
+        <h3>{{ city_weather_update.time }}</h3>
+        <div class="data">
           <div>
-            <p class="text-center">{{ city_weather_update.temperature}}</p>
+            <p class="temperature">{{ city_weather_update.temperature }}</p>
             <p>Temperature</p>
           </div>
           <div>
             <p>{{ city_weather_update.humidity }}%</p>
             <p>Humidity</p>
           </div>
-
           <div>
-            <p>{{ city_weather_update.wind}}</p>
-            <p>km/h</p>
-            <p>Wind</p>
+            <p>{{ city_weather_update.wind }}</p>
+            <p>km/h Wind</p>
           </div>
           <div>
-            <h3>{{ city_weather_update.description}}</h3>
+            <h3>{{ city_weather_update.description }}</h3>
           </div>
         </div>
         {% endif %}
-
         <div class="subscribe">
-          <div>
-            <h4>{% if error_message %} {{ error_message }} {% endif %}</h4>
-          </div>
-          <form method="post" action="{% url 'index' %}">
+          <h4>{% if error_message %} {{ error_message }} {% endif %}</h4>
+          <form method="post" action="{% url 'index' %}" class="subscribe-form">
             {% csrf_token %}
-            <div class="container">
-              <br />
-              <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-8">
-                  <form class="card card-sm">
-                    <div class="card-body row no-gutters align-items-center">
-                      <div class="col-auto">
-                        <i class="fas fa-search h4 text-body"></i>
-                      </div>
-                      <!--end of col-->
-                      <div class="col">
-                        <input
-                          class="form-control form-control-lg form-control-borderless"
-                          type="text"
-                          id="city"
-                          name="city"
-                          value="{{ city }}"
-                          placeholder="Search topics or keywords"
-                        />
-                      </div>
-                      <!--end of col-->
-                      <div class="col-auto">
-                        <button class="btn btn-lg btn-success" type="submit">
-                          Search
-                        </button>
-                      </div>
-                      <!--end of col-->
-                    </div>
-                  </form>
-                </div>
-                <!--end of col-->
-              </div>
-            </div>
+            <input
+              type="text"
+              class="form-control"
+              id="city"
+              name="city"
+              value="{{ city }}"
+              placeholder="Enter city"
+            />
+            <button class="btn btn-secondary" type="submit">
+              <i class="fa fa-search"></i>
+            </button>
           </form>
         </div>
       </div>
@@ -149,7 +132,7 @@
         var videoSources = {
           "few clouds": "{% static 'weather/fewclouds.mp4' %}",
           "scattered clouds": "{% static 'weather/scatteredsclouds.mp4' %}",
-          rainy: "{% static 'weather/rain.mp4' %}",
+          "moderate rain": "{% static 'weather/rain.mp4' %}",
           snowy: "{% static 'weather/snow.mp4' %}",
           "clear sky": "{% static 'weather/clearsky.mp4' %}", // Add this line
         };
@@ -175,7 +158,6 @@
 
     <!-- Vendor JS Files -->
     <script src="{% static 'weather/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'weather/assets/vendor/php-email-form/validate.js' %}"></script>
 
     <!-- Template Main JS File -->
     <script src="{% static 'weather/assets/js/main.js' %}"></script>
