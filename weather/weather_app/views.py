@@ -18,16 +18,19 @@ def index(request):
             # getting the current time
             current_time = datetime.now()
             # formatting the time using directives, it will take this format Day, Month Date Year, Current Time 
-            formatted_time = current_time.strftime("%A, %B %d %Y, %H:%M:%S %p")
+            formatted_time = current_time.strftime("%A, %B %d %Y, %I:%M %p")
+
+            temperature = round(response['main']['temp'])
+            description = response['weather'][0]['description'].capitalize()
             # bundling the weather information in one dictionary
             city_weather_update = {
                 'city': city_name,
-                'description': response['weather'][0]['description'],
+                'description': description,
                 'icon': response['weather'][0]['icon'],
-                'temperature':str(response['main']['temp']) + ' °C',
+                'temperature': f'{temperature}°C',
                 'country_code': response['sys']['country'],
-                'wind': (response['wind']['speed']),
-                'humidity':str(response['main']['humidity']),
+                'wind': str(response['wind']['speed']) + ' km/h',
+                'humidity':str(response['main']['humidity']) + '%',
                 'time': formatted_time
             }
         # if the request method is GET empty the dictionary

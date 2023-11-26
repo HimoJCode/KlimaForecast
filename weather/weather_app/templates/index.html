@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather</title>
     <meta content="" name="description" />
     <meta content="" name="keywords" />
@@ -38,7 +38,6 @@
     <!-- Template Main CSS File -->
     <link href="{% static 'weather/assets/css/style.css' %}" rel="stylesheet" />
   </head>
-
   <body>
     <div>
       <!-- Video sources go here -->
@@ -74,56 +73,85 @@
         <!-- Add more sources as needed -->
       </video>
     </div>
-    <!-- ======= Header ======= -->
-    <header id="header">
+    <div class="weather-app">
       <div class="container">
-        <h2>IT's Weather Time</h2>
+        <h3 class="brand">ClimaForcast</h3>
         {% if city_weather_update %}
-        <h1 style="text-transform: capitalize">
-          <img
-            src="http://openweathermap.org/img/w/{{ city_weather_update.icon }}.png"
-            alt=""
-          />
-          {{ city_weather_update.city }}, {{ city_weather_update.country_code }}
-        </h1>
-        <h3>{{ city_weather_update.time }}</h3>
-        <div class="data">
-          <div>
-            <p class="temperature">{{ city_weather_update.temperature }}</p>
-            <p>Temperature</p>
+        <div class="me-5">
+          <!--Temperature-->
+          <h1 class="temp">{{ city_weather_update.temperature }}</h1>
+          <!--end temperature-->
+          <div class="city-time">
+            <!--City name-->
+            <h1 class="name text-capitalize">
+              {{ city_weather_update.city}} {{city_weather_update.country_code}}
+            </h1>
+            <!--end city-->
+            <!--date and time-->
+            <small>
+              <span class="time">{{ city_weather_update.time }}</span>
+            </small>
           </div>
-          <div>
-            <p>{{ city_weather_update.humidity }}%</p>
-            <p>Humidity</p>
-          </div>
-          <div>
-            <p>{{ city_weather_update.wind }}</p>
-            <p>km/h Wind</p>
-          </div>
-          <div>
-            <h3>{{ city_weather_update.description }}</h3>
-          </div>
-        </div>
-        {% endif %}
-        <div class="subscribe">
-          <h4>{% if error_message %} {{ error_message }} {% endif %}</h4>
-          <form method="post" action="{% url 'index' %}" class="subscribe-form">
-            {% csrf_token %}
-            <input
-              type="text"
-              class="form-control"
-              id="city"
-              name="city"
-              value="{{ city }}"
-              placeholder="Enter city"
-            />
-            <button class="btn btn-secondary" type="submit">
-              <i class="fa fa-search"></i>
-            </button>
-          </form>
+          {% endif %}
+          <!--end date and time-->
         </div>
       </div>
-    </header>
+      <div class="panel">
+        <!--search-->
+        <form id="locationInput" method="post" action="{% url 'index' %}">
+          {% csrf_token %}
+          <input
+            type="text"
+            class="search"
+            placeholder="Search location"
+            id="city"
+            name="city"
+            value="{{ city }}"
+            autocomplete="off"
+            required
+          />
+          <button type="submit" class="submit">
+            <i class="fa fa-search"></i>
+          </button>
+          <h4>{% if error_message %} {{ error_message }} {% endif %}</h4>
+        </form>
+        <!--end search-->
+
+        <!--end old search-->
+        <ul class="details">
+          <h5 class="text-center">Weather Details</h5>
+          <!--weather conditions-->
+          <li>
+            <span>Weather</span>
+            <span>{{ city_weather_update.description }}</span>
+          </li>
+          <!--end weather conditions-->
+          <!--weather humidity-->
+          <li>
+            <span>Humidity</span>
+            <span class="humidity">{{ city_weather_update.humidity }}</span>
+          </li>
+          <!--end weather humidity-->
+          <!--weather humidity-->
+          <li>
+            <span>Wind</span>
+            <span class="wind">{{ city_weather_update.wind }}</span>
+          </li>
+          <!--end weather humidity-->
+        </ul>
+        <div class="weather d-flex align-items-center justify-content-center">
+          <img
+            src="http://openweathermap.org/img/w/{{ city_weather_update.icon }}.png"
+            alt="Not found"
+            width="200"
+            height="100"
+          />
+        </div>
+        <span class="condition d-flex align-items-center justify-content-center"
+          >{{city_weather_update.description}}</span
+        >
+      </div>
+    </div>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         var weatherCondition = "{{ city_weather_update.description|lower }}";
@@ -155,7 +183,6 @@
         }
       });
     </script>
-
     <!-- Vendor JS Files -->
     <script src="{% static 'weather/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
