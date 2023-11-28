@@ -1,47 +1,81 @@
 import requests
 from django.shortcuts import render
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Create your views here.
 def index(request):
-    # if there are no errors the code inside try will execute
     try:
-    # checking if the method is POST
         if request.method == 'POST':
             API_KEY = '3ac8030d435340805fb457e2b81d7467'
-            # getting the city name from the form input   
             city_name = request.POST.get('city')
-            # the url for current weather, takes city_name and API_KEY   
-            url = f'https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}&units=metric'
-            # converting the request response to json   
-            response = requests.get(url).json()
-            # getting the current time
-            current_time = datetime.now()
-            # formatting the time using directives, it will take this format Day, Month Date Year, Current Time 
-            formatted_time = current_time.strftime("%A, %B %d %Y, %I:%M %p")
+            
+            # Get current weather data
+            current_url = f'https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_KEY}&units=metric'
+            current_response = requests.get(current_url)
+            current_data = current_response.json()
 
-            temperature = round(response['main']['temp'])
-            description = response['weather'][0]['description'].capitalize()
-            # bundling the weather information in one dictionary
-            city_weather_update = {
-                'city': city_name,
-                'description': description,
-                'icon': response['weather'][0]['icon'],
-                'temperature': f'{temperature}°C',
-                'country_code': response['sys']['country'],
-                'wind': str(response['wind']['speed']) + ' km/h',
-                'humidity':str(response['main']['humidity']) + '%',
-                'time': formatted_time
-            }
-        # if the request method is GET empty the dictionary
+            # Check if the API call was successful
+            if current_response.status_code == 200:
+                # Get 5-day forecast data
+                forecast_url = f'https://api.openweathermap.org/data/2.5/forecast?q={city_name}&appid={API_KEY}&units=metric'
+                forecast_response = requests.get(forecast_url)
+                forecast_data = forecast_response.json()
+
+                # Check if the forecast API call was successful
+                if forecast_response.status_code == 200:
+                    # Extract relevant information from the API responses
+                    current_temperature = round(current_data['main']['temp'])
+                    current_description = current_data['weather'][0]['description'].capitalize()
+                    current_icon = current_data['weather'][0]['icon']
+                    current_time = datetime.now().strftime("%A, %B %d %Y, %I:%M %p")
+
+                    # Extract forecast information for the next 5 days
+                    days_forecast = []
+                    today = datetime.now()
+                    for entry in forecast_data['list']:
+                        date = datetime.fromtimestamp(entry['dt'])
+                        # Check if the entry is within the next 5 days
+                        if date >= today and (date - today).days < 5:
+                            temperature = round(entry['main']['temp'])
+                            description = entry['weather'][0]['description'].capitalize()
+                            icon = entry['weather'][0]['icon']
+
+                            days_forecast.append({
+                                'date': date, 
+                                'temperature': f'{temperature}°C', 
+                                'description': description, 
+                                'icon': icon
+                                })
+
+                    city_weather_update = {
+                        'city': city_name,
+                        'description': current_description,
+                        'icon': current_icon,
+                        'temperature': f'{current_temperature}°C',
+                        'country_code': current_data['sys']['country'],
+                        'wind': str(current_data['wind']['speed']) + ' km/h',
+                        'humidity': str(current_data['main']['humidity']) + '%',
+                        'time': current_time
+                    }
+
+                    context = {'city_weather_update': city_weather_update, 'forecast_data': days_forecast, 'error_message': None}
+                    return render(request, 'index.html', context)
+                else:
+                    # Print error details for forecast API
+                    print(f"Forecast API Error: {forecast_response.status_code} - {forecast_response.text}")
+            else:
+                # Print error details for current weather API
+                print(f"Current Weather API Error: {current_response.status_code} - {current_response.text}")
+                
         else:
+            # Handle the case where the request is not a POST
             city_weather_update = {}
-        
-        context = {'city_weather_update': city_weather_update, 'error_message': None}
+            days_forecast = []
+
+        context = {'city_weather_update': city_weather_update, 'forecast_data': days_forecast, 'error_message': None}
         return render(request, 'index.html', context)
+
     except Exception as e:
         # Handle generic exception
-        error_message = f"The city you've enter is not found!"
-        context = { 'error_message': error_message}
+        error_message = f"The city you've enter is not found."
+        context = {'error_message': error_message}
         return render(request, 'index.html', context)
-

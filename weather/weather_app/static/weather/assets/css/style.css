@@ -27,7 +27,6 @@ video {
   position: relative;
   opacity: 1;
 }
-
 .weather-app::before {
   content: "";
   position: absolute;
@@ -43,7 +42,7 @@ video {
   z-index: 0;
 }
 .container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -51,15 +50,19 @@ video {
   display: flex;
   flex-direction: column;
   padding: 2em 3em 4em 3em;
+  margin-top: 2em;
+  margin-right: 2em;
 }
 .container > div {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 5em;
 }
 .city-time,
 .temp,
-.weather {
+.weather,
+.name {
   margin: 0 1em;
 }
 .city-time h1 {
@@ -80,7 +83,7 @@ video {
   height: 20vh;
 }
 .panel {
-  position: absolute;
+  position: fixed;
   width: 35%;
   height: 100%;
   top: 0;
@@ -105,6 +108,47 @@ video {
   vertical-align: top; /* Align the submit button with the top of the search input */
   color: #fff;
 }
+.forecast-section {
+  overflow-x: scroll;
+  white-space: nowrap;
+  padding: 1em;
+  display: flex;
+  justify-content: flex-start; /* Start at the beginning of the container */
+  position: relative;
+  margin-top: 2em;
+  width: 49em;
+}
+.forecast-container {
+  display: flex;
+  gap: 1.5em;
+  padding: 1em;
+  min-width: 100%; /* Take full width of the parent */
+  justify-content: flex-start;
+}
+.forecast-item {
+  min-width: 300px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center text horizontally */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.forecast-item img {
+  display: block;
+  margin-top: 0.5em;
+}
+/* For WebKit browsers (Chrome, Safari) */
+
+.forecast-heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3em;
+  margin-right: 2em;
+}
+/* Existing styles below... */
 
 .search {
   background: none;
