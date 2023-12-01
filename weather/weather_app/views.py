@@ -1,6 +1,6 @@
 import requests
 from django.shortcuts import render
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def index(request):
     try:
@@ -22,25 +22,27 @@ def index(request):
 
                 # Check if the forecast API call was successful
                 if forecast_response.status_code == 200:
-                    # Extract relevant information from the API responses
+                    # get relevant information from the API responses
                     current_temperature = round(current_data['main']['temp'])
                     current_description = current_data['weather'][0]['description'].capitalize()
                     current_icon = current_data['weather'][0]['icon']
                     current_time = datetime.now().strftime("%A, %B %d %Y, %I:%M %p")
 
-                    # Extract forecast information for the next 5 days
+                    # get forecast information for the 5 days forecast
                     days_forecast = []
                     today = datetime.now()
                     for entry in forecast_data['list']:
                         date = datetime.fromtimestamp(entry['dt'])
                         # Check if the entry is within the next 5 days
-                        if date >= today and (date - today).days < 5:
+                        if date > today and (date - today).days < 5:
                             temperature = round(entry['main']['temp'])
                             description = entry['weather'][0]['description'].capitalize()
                             icon = entry['weather'][0]['icon']
 
+                            entry_weekday = date.strftime("%A, %I:%M %p")
+
                             days_forecast.append({
-                                'date': date, 
+                                'weekdays': entry_weekday, 
                                 'temperature': f'{temperature}°C', 
                                 'description': description, 
                                 'icon': icon
@@ -76,6 +78,6 @@ def index(request):
 
     except Exception as e:
         # Handle generic exception
-        error_message = f"The city you've enter is not found."
+        error_message = f"The City you've entered is not found."
         context = {'error_message': error_message}
         return render(request, 'index.html', context)

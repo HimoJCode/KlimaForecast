@@ -4,12 +4,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather</title>
+    <title>KlimaForecast</title>
     <meta content="" name="description" />
     <meta content="" name="keywords" />
 
     <!-- Favicons -->
-    <link href="{% static 'weather/assets/img/favicon.png' %}" rel="icon" />
+    <link href="{% static 'weather/assets/img/favi.png' %}" rel="icon" />
     <link
       href="{% static 'weather/assets/img/apple-touch-icon.png' %}"
       rel="apple-touch-icon"
@@ -44,8 +44,8 @@
       <video id="backgroundVideo" autoplay muted loop>
         <!-- Default video source -->
         <source
-          id="moderaterain"
-          src="{% static 'weather/rain.mp4' %}"
+          id="KlimaForcast"
+          src="{% static 'weather/KlimaForecast.mp4' %}"
           type="video/mp4"
         />
         <!-- Additional sources for different weather conditions -->
@@ -74,16 +74,25 @@
           src="{% static 'weather/snow.mp4' %}"
           type="video/mp4"
         />
-        <!-- Add more sources as needed -->
+        <source
+          id="overcastclouds"
+          src="{% static 'weather/overcastclouds.mp4' %}"
+          type="video/mp4"
+        />
+        <source
+          id="brokenclouds"
+          src="{% static 'weather/brokenclouds.mp4' %}"
+          type="video/mp4"
+        />
       </video>
     </div>
     <div class="weather-app">
       <div>
-        <h3 class="brand p-3">ClimaForcast</h3>
+        <h3 class="brand p-3">KlimaForecast</h3>
       </div>
       <div class="container">
         {% if city_weather_update %}
-        <div class="">
+        <div>
           <!--Temperature-->
           <h1 class="temp">{{ city_weather_update.temperature }}</h1>
           <!--end temperature-->
@@ -100,7 +109,7 @@
           </div>
         </div>
         <div class="forecast-heading">
-          <h3>Hourly Forecast in the next 5 days</h3>
+          <h3>Hourly forecast in five days</h3>
         </div>
         <div class="forecast-section">
           {% if forecast_data %}
@@ -108,8 +117,8 @@
             {% for entry in forecast_data %}
             <div class="forecast-item">
               <div>
-                <strong>{{ entry.date }}</strong>
-                <p>{{ entry.temperature }}</p>
+                <strong>{{ entry.weekdays }}</strong>
+                <h1>{{ entry.temperature }}</h1>
                 <p>{{entry.description }}</p>
                 <img
                   src="http://openweathermap.org/img/w/{{ entry.icon }}.png"
@@ -130,7 +139,7 @@
           <input
             type="text"
             class="search"
-            placeholder="Search location"
+            placeholder="Search City"
             id="city"
             name="city"
             value="{{ city }}"
@@ -174,7 +183,7 @@
         <div class="weather d-flex align-items-center justify-content-center">
           <img
             src="http://openweathermap.org/img/w/{{ city_weather_update.icon }}.png"
-            alt="Not found"
+            alt="Weather Icon"
             width="350"
             height="300"
           />
@@ -188,10 +197,16 @@
         // Map weather conditions to video sources
         var videoSources = {
           "few clouds": "{% static 'weather/fewclouds.mp4' %}",
-          "scattered clouds": "{% static 'weather/scatteredsclouds.mp4' %}",
+          "scattered clouds": "{% static 'weather/scatteredclouds.mp4' %}",
           "moderate rain": "{% static 'weather/rain.mp4' %}",
+          "light rain": "{% static 'weather/rain.mp4' %}",
           snowy: "{% static 'weather/snow.mp4' %}",
-          "clear sky": "{% static 'weather/clearsky.mp4' %}", // Add this line
+          "light snow": "{% static 'weather/snow.mp4' %}",
+          "clear sky": "{% static 'weather/clearsky.mp4' %}",
+          "overcast clouds": "{% static 'weather/overcastclouds.mp4' %}",
+          thunderstorm: "{% static 'weather/thunderstorm.mp4' %}",
+          "broken clouds": "{% static 'weather/brokenclouds.mp4' %}",
+          "heavy intensity rain": "{% static 'weather/rain.mp4' %}",
         };
 
         // Set the video source based on the weather condition

@@ -138,6 +138,7 @@ video {
 .forecast-item img {
   display: block;
   margin-top: 0.5em;
+  margin: 0 auto;
 }
 /* For WebKit browsers (Chrome, Safari) */
 
