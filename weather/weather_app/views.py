@@ -78,6 +78,6 @@ def index(request):
 
     except Exception as e:
         # Handle generic exception
-        error_message = f"The City you've entered is not found."
+        error_message = f"The location you've entered is not found."
         context = {'error_message': error_message}
         return render(request, 'index.html', context)
