@@ -2,9 +2,9 @@
   "version": 2,
   "builds": [
     {
-      "src": "weather/weather/wsgi.py",
+      "src": "weather/wsgi.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
+      "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
     },
     {
       "src": "build_files.sh",
@@ -21,7 +21,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "weather/weather/wsgi.py"
+      "dest": "weather/wsgi.py"
     }
   ]
 }
